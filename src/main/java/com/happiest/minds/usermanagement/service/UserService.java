@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.happiest.minds.usermanagement.enums.Constants.*;
+
 @Service
 public class UserService {
     @Autowired
@@ -24,7 +26,7 @@ public class UserService {
 
     public User getUserById(Integer userId) {
         return userRepo.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Not found user with id" + userId));
+                .orElseThrow(() -> new ResourceNotFoundException(NO_DATA_FOUND.getValue() + userId));
     }
 
     public List<User> getAllUsers() {

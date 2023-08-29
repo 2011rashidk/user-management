@@ -8,19 +8,20 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.happiest.minds.usermanagement.enums.Constants.*;
+
 @Service
 public class RoleService {
     @Autowired
     public RoleRepository roleRepository;
 
     public Role createRole(Role role) {
-
         return roleRepository.save(role);
     }
 
     public Role getRoleById(Integer roleId) {
         return roleRepository.findById(roleId)
-                .orElseThrow(() -> new ResourceNotFoundException("Not found role with id" + roleId));
+                .orElseThrow(() -> new ResourceNotFoundException(NO_DATA_FOUND.getValue() + roleId));
     }
 
     public List<Role> getAllRoles() {

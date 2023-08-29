@@ -1,9 +1,7 @@
 package com.happiest.minds.usermanagement.controller;
 
-import com.happiest.minds.usermanagement.dto.UserDTO;
 import com.happiest.minds.usermanagement.entity.User;
 import com.happiest.minds.usermanagement.service.UserService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +17,7 @@ public class UserController {
     public UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody UserDTO userDTO) {
-        User user = new User();
-        BeanUtils.copyProperties(userDTO, user);
+    public ResponseEntity<User> createUser(@RequestBody User user) {
         user = userService.createUser(user);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
@@ -40,15 +36,13 @@ public class UserController {
 
     @PutMapping("{userId}")
     public ResponseEntity<User> updateUserById(@PathVariable Integer userId,
-                                               @RequestBody UserDTO userDTO) {
+                                               @RequestBody User user) {
         if (userService.getUserById(userId) != null) {
-            User user = new User();
-            BeanUtils.copyProperties(userDTO, user);
             user.setUserId(userId);
             user = userService.createUser(user);
             return new ResponseEntity<>(user, HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @DeleteMapping("{userId}")

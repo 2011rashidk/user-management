@@ -1,12 +1,15 @@
 package com.happiest.minds.usermanagement.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Set;
 
 @Entity
-@Data
+@Setter
+@Getter
 @Table(name = "permissions")
 public class Permission {
 
@@ -18,6 +21,7 @@ public class Permission {
     @Column(name = "permission_name")
     private String permissionName;
 
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "permissions")
     private Set<Role> roles;
 

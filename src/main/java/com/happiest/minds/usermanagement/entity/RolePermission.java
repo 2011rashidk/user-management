@@ -1,20 +1,22 @@
 package com.happiest.minds.usermanagement.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Data;
+import com.happiest.minds.usermanagement.id.RolePermissionId;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
 @Entity
+@Setter
+@Getter
 @Table(name = "role_permission")
+@IdClass(RolePermissionId.class)
 public class RolePermission {
 
     @Id
     @Column(name = "role_id")
     private Integer roleId;
 
+    @Id
     @Column(name = "permission_id")
     private Integer permissionId;
 

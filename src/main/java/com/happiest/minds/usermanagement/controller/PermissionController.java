@@ -18,15 +18,17 @@ public class PermissionController {
     public PermissionService permissionService;
 
     @PostMapping
-    public ResponseEntity<Permission> createPermission(@RequestBody Permission permission) {
-        permissionService.createPermission(permission);
+    public ResponseEntity<Permission> createPermission(@RequestBody PermissionDTO permissionDTO) {
+        Permission permission = new Permission();
+        BeanUtils.copyProperties(permissionDTO, permission);
+        permission = permissionService.createPermission(permission);
         return new ResponseEntity<>(permission, HttpStatus.CREATED);
     }
 
     @GetMapping("{permissionId}")
     public ResponseEntity<Permission> getPermissionById(@PathVariable Integer permissionId) {
-        Permission permissionById = permissionService.getPermissionById(permissionId);
-        return new ResponseEntity<>(permissionById, HttpStatus.OK);
+        Permission permission = permissionService.getPermissionById(permissionId);
+        return new ResponseEntity<>(permission, HttpStatus.OK);
     }
 
     @GetMapping
@@ -45,7 +47,7 @@ public class PermissionController {
             permission = permissionService.createPermission(permission);
             return new ResponseEntity<>(permission, HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @DeleteMapping("{permissionId}")

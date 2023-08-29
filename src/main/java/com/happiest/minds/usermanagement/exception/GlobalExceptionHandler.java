@@ -1,6 +1,7 @@
 package com.happiest.minds.usermanagement.exception;
 
 import com.happiest.minds.usermanagement.response.Response;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import static com.happiest.minds.usermanagement.enums.Constants.BAD_CREDENTIALS;
+import static com.happiest.minds.usermanagement.enums.Constants.*;
 
 
 @RestControllerAdvice
@@ -26,8 +27,25 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Response> badCredentialsExceptionHandler() {
+        log.error(BAD_CREDENTIALS.getValue());
         Response response = new Response(HttpStatus.BAD_REQUEST, BAD_CREDENTIALS.getValue(), null);
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<Response> tokenExpiredException() {
+        log.error(BAD_CREDENTIALS.getValue());
+        Response response = new Response(HttpStatus.BAD_REQUEST, JWT_TOKEN_EXPIRED.getValue(), null);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Response> resourceNotFoundException(String message) {
+        log.error(message);
+        Response response = new Response(HttpStatus.BAD_REQUEST, message, null);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
 }

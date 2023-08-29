@@ -14,6 +14,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,16 +35,19 @@ public class JwtAuthenticationService {
         authenticate(userLogin.getUsername(), userLogin.getPassword());
         UserDetails userDetails = userDetailsService.loadUserByUsername(userLogin.getUsername());
         String token = jwtTokenUtil.generateToken(userDetails);
-        return new LoginResponse(userDetails.getUsername(), token);
+        Date expirationDateFromToken = jwtTokenUtil.getExpirationDateFromToken(token);
+        LocalDateTime expiryDateTime = LocalDateTime.ofInstant(expirationDateFromToken.toInstant(),
+                ZoneId.systemDefault());
+        return new LoginResponse(userDetails.getUsername(), token, expiryDateTime);
     }
 
     public void authenticate(String username, String password) throws Exception {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (DisabledException e) {
-            throw new Exception("USER_DISABLED", e);
+            throw new DisabledException("USER_DISABLED", e);
         } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
+            throw new BadCredentialsException("INVALID_CREDENTIALS", e);
         }
     }
 

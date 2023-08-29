@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.happiest.minds.usermanagement.enums.Constants.*;
+
 @Service
 public class PermissionService {
     @Autowired
@@ -20,7 +22,7 @@ public class PermissionService {
 
     public Permission getPermissionById(Integer permissionId) {
         return permissionRepo.findById(permissionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Not found permission with id" + permissionId));
+                .orElseThrow(() -> new ResourceNotFoundException(NO_DATA_FOUND.getValue() + permissionId));
     }
 
     public List<Permission> getAllPermissions() {

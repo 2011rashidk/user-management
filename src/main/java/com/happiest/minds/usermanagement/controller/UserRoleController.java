@@ -26,4 +26,5 @@ public class UserRoleController {
         userRoleService.addRoleToUser(userRole);
         return new ResponseEntity<>(userRole, HttpStatus.OK);
     }
+
 }

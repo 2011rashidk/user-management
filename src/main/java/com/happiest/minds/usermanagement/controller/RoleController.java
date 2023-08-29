@@ -3,6 +3,7 @@ package com.happiest.minds.usermanagement.controller;
 import com.happiest.minds.usermanagement.dto.RoleDTO;
 import com.happiest.minds.usermanagement.entity.Role;
 import com.happiest.minds.usermanagement.service.RoleService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,14 +14,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/user/management/role")
+@Slf4j
 public class RoleController {
     @Autowired
     public RoleService roleService;
 
     @PostMapping
-    public ResponseEntity<Role> createRole(@RequestBody RoleDTO roleDTO) {
-        Role role = new Role();
-        BeanUtils.copyProperties(roleDTO, role);
+    public ResponseEntity<Role> createRole(@RequestBody Role role) {
         role = roleService.createRole(role);
         return new ResponseEntity<>(role, HttpStatus.CREATED);
     }
@@ -40,15 +40,13 @@ public class RoleController {
 
     @PutMapping("{roleId}")
     public ResponseEntity<Role> updateRoleById(@PathVariable Integer roleId,
-                                               @RequestBody RoleDTO roleDTO) {
+                                               @RequestBody Role role) {
         if (roleService.getRoleById(roleId) != null) {
-            Role role = new Role();
-            BeanUtils.copyProperties(roleDTO, role);
             role.setRoleId(roleId);
             role = roleService.createRole(role);
             return new ResponseEntity<>(role, HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @DeleteMapping("{roleId}")
