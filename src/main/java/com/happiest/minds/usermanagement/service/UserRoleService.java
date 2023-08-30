@@ -14,4 +14,13 @@ public class UserRoleService {
     public UserRole addRoleToUser(UserRole userRole) {
         return userRoleRepository.save(userRole);
     }
+
+    public UserRole getByUserIdAndRoleId(UserRole userRole) {
+        return userRoleRepository.findByUserIdAndRoleId(userRole.getUserId(), userRole.getRoleId());
+    }
+
+    public void deleteByUserIdAndRoleId(UserRole userRole) {
+        userRoleRepository.deleteByUserIdAndRoleId(userRole.getUserId(), userRole.getRoleId());
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.happiest.minds.usermanagement.jwtUtility;
+package com.happiest.minds.usermanagement.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -13,10 +13,14 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Component
-public class JwtHelper {
+public class JwtTokenUtil {
 
     @Value("${JWT_TOKEN_VALIDITY}")
     public Long tokenValidity;
+
+    @Value("${JWT_TOKEN_REFRESH_VALIDITY}")
+    public Long tokenRefreshValidity;
+
     @Value("${JWT_TOKEN_SECRET}")
     public String secret;
 
@@ -37,7 +41,7 @@ public class JwtHelper {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
 
-    private Boolean isTokenExpired(String token) {
+    private boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
@@ -47,16 +51,22 @@ public class JwtHelper {
         return doGenerateToken(claims, userDetails.getUsername());
     }
 
+    public String doGenerateRefreshToken(Map<String, Object> claims, String subject) {
+        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + tokenRefreshValidity * 1000))
+                .signWith(SignatureAlgorithm.HS512, secret).compact();
+
+    }
+
     private String doGenerateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + tokenValidity * 1000))
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
+    public boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
 }
-

@@ -1,19 +1,20 @@
-package com.happiest.minds.usermanagement.dto;
+package com.happiest.minds.usermanagement.request;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginResponse {
+public class UserLogin {
 
+    @NotEmpty
     private String username;
-    private String jwtToken;
-    private LocalDateTime tokenExpiryTime;
+
+    @NotEmpty
+    private String password;
 }

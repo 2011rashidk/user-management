@@ -15,4 +15,12 @@ public class RolePermissionService {
         return rolePermissionRepository.save(rolePermission);
     }
 
+    public RolePermission getByRoleIdAndPermissionId(RolePermission rolePermission) {
+        return rolePermissionRepository.getByRoleIdAndPermissionId(rolePermission.getRoleId(), rolePermission.getPermissionId());
+    }
+
+    public void deleteByRoleIdAndPermissionId(RolePermission rolePermission) {
+        rolePermissionRepository.deleteByRoleIdAndPermissionId(rolePermission.getRoleId(), rolePermission.getPermissionId());
+    }
+
 }

@@ -1,12 +1,11 @@
 package com.happiest.minds.usermanagement.config;
 
-import com.happiest.minds.usermanagement.jwtUtility.JwtAuthenticationEntryPoint;
-import com.happiest.minds.usermanagement.jwtUtility.JwtRequestFilter;
+import com.happiest.minds.usermanagement.security.JwtAuthenticationEntryPoint;
+import com.happiest.minds.usermanagement.security.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,18 +20,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig {
 
     @Autowired
-    public JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Autowired
-    public UserDetailsService jwtUserDetailsService;
+    private UserDetailsService jwtUserDetailsService;
 
     @Autowired
-    public JwtRequestFilter jwtRequestFilter;
+    private JwtRequestFilter jwtRequestFilter;
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(jwtUserDetailsService);
-    }
+//    @Autowired
+//    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.userDetailsService(jwtUserDetailsService);
+//    }
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -42,7 +41,7 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
-                .authorizeRequests()
+                .authorizeHttpRequests()
                 .requestMatchers("/test")
                 .authenticated()
                 .requestMatchers("/api/user/management/login",

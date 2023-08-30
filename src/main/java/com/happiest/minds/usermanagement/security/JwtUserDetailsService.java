@@ -1,4 +1,4 @@
-package com.happiest.minds.usermanagement.jwtUtility;
+package com.happiest.minds.usermanagement.security;
 
 import com.happiest.minds.usermanagement.entity.User;
 import com.happiest.minds.usermanagement.repository.UserRepository;

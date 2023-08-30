@@ -1,4 +1,4 @@
-package com.happiest.minds.usermanagement.jwtUtility;
+package com.happiest.minds.usermanagement.security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

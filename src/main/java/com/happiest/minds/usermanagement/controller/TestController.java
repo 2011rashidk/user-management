@@ -6,11 +6,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
+@RequestMapping("/test")
 public class TestController {
 
-    @RequestMapping("/test")
     public String test() {
         log.info("User Management Application");
         return "User Management Application";
     }
+
 }

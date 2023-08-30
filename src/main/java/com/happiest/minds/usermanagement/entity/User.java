@@ -1,9 +1,12 @@
 package com.happiest.minds.usermanagement.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -14,6 +17,7 @@ import java.util.Set;
 @Setter
 @Getter
 @Table(name = "users")
+@ToString
 public class User implements UserDetails {
 
     @Id
@@ -21,20 +25,25 @@ public class User implements UserDetails {
     @Column(name = "user_id")
     private Integer userId;
 
+    @NotEmpty
     @Column(name = "name")
     private String name;
 
+    @NotEmpty
     @Column(name = "email", unique = true)
     private String email;
 
+    @NotEmpty
     @Column(name = "mobile", unique = true)
     private String mobile;
 
+    @NotEmpty
     @Column(name = "username", unique = true)
     private String username;
 
+    @NotEmpty
     @Column(name = "password")
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @ManyToMany(fetch = FetchType.LAZY)

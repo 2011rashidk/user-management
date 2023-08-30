@@ -1,9 +1,9 @@
 package com.happiest.minds.usermanagement.service;
 
-import com.happiest.minds.usermanagement.dto.LoginResponse;
-import com.happiest.minds.usermanagement.dto.UserLogin;
-import com.happiest.minds.usermanagement.jwtUtility.JwtTokenUtil;
-import com.happiest.minds.usermanagement.jwtUtility.JwtUserDetailsService;
+import com.happiest.minds.usermanagement.response.LoginResponse;
+import com.happiest.minds.usermanagement.request.UserLogin;
+import com.happiest.minds.usermanagement.security.JwtTokenUtil;
+import com.happiest.minds.usermanagement.security.JwtUserDetailsService;
 import io.jsonwebtoken.impl.DefaultClaims;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ public class JwtAuthenticationService {
         return new LoginResponse(userDetails.getUsername(), token, expiryDateTime);
     }
 
-    public void authenticate(String username, String password) throws Exception {
+    public void authenticate(String username, String password){
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (DisabledException e) {
@@ -58,7 +58,7 @@ public class JwtAuthenticationService {
     }
 
     public Map<String, Object> getMapFromIoJsonWebTokenClaims(DefaultClaims claims) {
-        Map<String, Object> expectedMap = new HashMap<String, Object>();
+        Map<String, Object> expectedMap = new HashMap<>();
         for (Map.Entry<String, Object> entry : claims.entrySet()) {
             expectedMap.put(entry.getKey(), entry.getValue());
         }

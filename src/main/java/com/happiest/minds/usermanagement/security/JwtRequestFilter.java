@@ -1,10 +1,11 @@
-package com.happiest.minds.usermanagement.jwtUtility;
+package com.happiest.minds.usermanagement.security;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,7 +16,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+import static com.happiest.minds.usermanagement.enums.Constants.*;
+
 @Component
+@Slf4j
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Autowired
@@ -34,16 +38,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String jwtToken = null;
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
             jwtToken = requestTokenHeader.substring(7);
-            System.out.println("jwtToken = " + jwtToken);
+            log.info("jwtToken: {}", jwtToken);
             try {
                 username = jwtTokenUtil.getUsernameFromToken(jwtToken);
             } catch (IllegalArgumentException e) {
-                System.out.println("Unable to get JWT Token");
+                log.error("Unable to get JWT Token");
             } catch (ExpiredJwtException ex) {
-                System.out.println("JWT Token has expired");
+                log.error(JWT_TOKEN_EXPIRED.getValue());
                 String isRefreshToken = request.getHeader("isRefreshToken");
                 String requestUrl = request.getRequestURL().toString();
-                if (isRefreshToken != null && isRefreshToken.equals(true) && requestUrl.contains("refresh/token")) {
+                if (isRefreshToken != null && isRefreshToken.equals("true") && requestUrl.contains("refresh/token")) {
                     allowForRefreshToken(ex, request);
                 } else {
                     request.setAttribute("exception", ex);

@@ -1,4 +1,4 @@
-package com.happiest.minds.usermanagement.jwtUtility;
+package com.happiest.minds.usermanagement.security;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -24,7 +24,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     public JwtHelper jwtHelper;
-    public UserDetailsService userDetailsService;
+    private UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -35,15 +35,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.info("Header: {}", requestHeader);
             token = requestHeader.substring(7);
             try {
-                username = this.jwtHelper.getUsernameFromToken(token);
+                username = jwtHelper.getUsernameFromToken(token);
             } catch (IllegalArgumentException e) {
-                logger.info("Illegal Argument while fetching the username !!");
+                log.info("Illegal Argument while fetching the username !!");
                 e.printStackTrace();
             } catch (ExpiredJwtException e) {
-                logger.info("Given jwt token is expired !!");
+                log.info("Given jwt token is expired !!");
                 e.printStackTrace();
             } catch (MalformedJwtException e) {
-                logger.info("Some changed has done in token !! Invalid Token");
+                log.info("Some changed has done in token !! Invalid Token");
                 e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -51,14 +51,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-            Boolean validateToken = this.jwtHelper.validateToken(token, userDetails);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            boolean validateToken = jwtHelper.validateToken(token, userDetails);
             if (validateToken) {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {
-                logger.info("Validation fails !!");
+                log.info("Validation fails !!");
             }
         }
         filterChain.doFilter(request, response);

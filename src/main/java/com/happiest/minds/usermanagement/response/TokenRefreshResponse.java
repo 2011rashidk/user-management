@@ -1,4 +1,4 @@
-package com.happiest.minds.usermanagement.dto;
+package com.happiest.minds.usermanagement.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

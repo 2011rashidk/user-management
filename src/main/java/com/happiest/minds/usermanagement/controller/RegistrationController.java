@@ -1,8 +1,9 @@
 package com.happiest.minds.usermanagement.controller;
 
-import com.happiest.minds.usermanagement.dto.UserDTO;
+import com.happiest.minds.usermanagement.request.UserDTO;
 import com.happiest.minds.usermanagement.entity.User;
 import com.happiest.minds.usermanagement.service.UserService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class RegistrationController {
     public UserService userService;
 
     @PostMapping("register")
-    public ResponseEntity<User> registerUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<User> registerUser(@Valid @RequestBody UserDTO userDTO) {
         log.info("userDTO: {}", userDTO);
         User user = new User();
         BeanUtils.copyProperties(userDTO, user);

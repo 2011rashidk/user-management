@@ -3,8 +3,10 @@ package com.happiest.minds.usermanagement.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Set;
 
@@ -12,6 +14,7 @@ import java.util.Set;
 @Setter
 @Getter
 @Table(name = "roles")
+@ToString
 public class Role {
 
     @Id
@@ -19,6 +22,7 @@ public class Role {
     @Column(name = "role_id")
     private Integer roleId;
 
+    @NotEmpty
     @Column(name = "role_name")
     private String roleName;
 

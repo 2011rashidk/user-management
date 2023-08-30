@@ -3,11 +3,13 @@ package com.happiest.minds.usermanagement.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Setter
 @Getter
 @Table(name = "organization")
+@ToString
 public class Organization {
 
     @Id
