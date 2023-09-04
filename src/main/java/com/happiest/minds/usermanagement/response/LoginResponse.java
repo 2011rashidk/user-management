@@ -9,11 +9,12 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class LoginResponse {
 
-    private String username;
-    private String jwtToken;
-    private LocalDateTime tokenExpiryTime;
+  private String accessToken;
+  private String refreshToken;
+  LocalDateTime tokenExpiry;
+
 }

@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.util.Set;
 
@@ -14,7 +13,6 @@ import java.util.Set;
 @Setter
 @Getter
 @Table(name = "roles")
-@ToString
 public class Role {
 
     @Id
@@ -26,7 +24,7 @@ public class Role {
     @Column(name = "role_name")
     private String roleName;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "role_permission", joinColumns = {@JoinColumn(name = "role_id")}, inverseJoinColumns = {@JoinColumn(name = "permission_id")})
     private Set<Permission> permissions;
 

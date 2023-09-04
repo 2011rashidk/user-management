@@ -1,7 +1,7 @@
 package com.happiest.minds.usermanagement.controller;
 
-import com.happiest.minds.usermanagement.request.EmployeeDTO;
 import com.happiest.minds.usermanagement.entity.Employee;
+import com.happiest.minds.usermanagement.request.EmployeeDTO;
 import com.happiest.minds.usermanagement.service.EmployeeService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -10,6 +10,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -20,12 +21,14 @@ import static com.happiest.minds.usermanagement.enums.Constants.*;
 @RestController
 @RequestMapping("api/user/management/employee")
 @Slf4j
+@PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
 public class EmployeeController {
 
     @Autowired
     EmployeeService employeeService;
 
     @PostMapping
+    @PreAuthorize("hasAuthority('WRITE')")
     public ResponseEntity<Employee> createEmployee(@Valid @RequestBody EmployeeDTO employeeDTO) {
         log.info("employeeDTO: {}", employeeDTO);
         Employee employee = new Employee();
@@ -36,6 +39,7 @@ public class EmployeeController {
     }
 
     @PostMapping("employees")
+    @PreAuthorize("hasAuthority('WRITE')")
     public ResponseEntity<List<Employee>> createEmployees(@Valid @RequestBody List<EmployeeDTO> employeeDTOList) {
         log.info("employeeDTOList: {}", employeeDTOList);
         List<Employee> employees = new ArrayList<>();
@@ -64,11 +68,11 @@ public class EmployeeController {
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 
-    @PutMapping("{id}")
-    public ResponseEntity<Employee> updateEmployeeById(@Valid @NotEmpty @PathVariable String id,
-                                                       @Valid @RequestBody EmployeeDTO employeeDTO) {
-        log.info("id: {}, employeeDTO: {}", id, employeeDTO);
-        if (employeeService.getEmployeeById(id) != null) {
+    @PutMapping
+    @PreAuthorize("hasAuthority('EDIT')")
+    public ResponseEntity<Employee> updateEmployeeById(@Valid @RequestBody EmployeeDTO employeeDTO) {
+        log.info("employeeDTO: {}", employeeDTO);
+        if (employeeService.getEmployeeById(employeeDTO.getId()) != null) {
             Employee employee = new Employee();
             BeanUtils.copyProperties(employeeDTO, employee);
             employee.setId(employeeDTO.getId());
@@ -76,11 +80,12 @@ public class EmployeeController {
             log.info("employee: {}", employee);
             return new ResponseEntity<>(employee, HttpStatus.OK);
         }
-        log.error(NO_DATA_FOUND.getValue().concat(id));
+        log.error(NO_DATA_FOUND.getValue().concat(employeeDTO.getId()));
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @DeleteMapping("{id}")
+    @PreAuthorize("hasAuthority('DELETE')")
     public ResponseEntity<HttpStatus> deleteEmployeeById(@Valid @NotEmpty @PathVariable String id) {
         log.info("id: {}", id);
         if (employeeService.getEmployeeById(id) != null) {

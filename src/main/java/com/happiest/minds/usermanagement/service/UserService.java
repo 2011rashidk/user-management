@@ -1,7 +1,7 @@
 package com.happiest.minds.usermanagement.service;
 
 import com.happiest.minds.usermanagement.entity.User;
-import com.happiest.minds.usermanagement.exception.ResourceNotFoundException;
+import com.happiest.minds.usermanagement.exception.NotFoundException;
 import com.happiest.minds.usermanagement.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,7 +26,7 @@ public class UserService {
 
     public User getUserById(Integer userId) {
         return userRepo.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException(NO_DATA_FOUND.getValue() + userId));
+                .orElseThrow(() -> new NotFoundException(NO_DATA_FOUND.getValue() + userId));
     }
 
     public List<User> getAllUsers() {

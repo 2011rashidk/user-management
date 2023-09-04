@@ -6,18 +6,19 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Setter
 @Getter
 @Table(name = "users")
-@ToString
 public class User implements UserDetails {
 
     @Id
@@ -46,9 +47,14 @@ public class User implements UserDetails {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JsonIgnore
     @JoinTable(name = "user_role", joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "role_id")})
     private Set<Role> roles;
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<Token> tokens;
 
     @Override
     public String getUsername() {
@@ -56,33 +62,39 @@ public class User implements UserDetails {
     }
 
     @Override
-    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        for (Role role : roles) {
+            for (Permission permission: role.getPermissions()) {
+                authorities.add(new SimpleGrantedAuthority(permission.getPermissionName()));
+            }
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleName()));
+        }
+        return authorities;
     }
 
     @Override
     @JsonIgnore
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     @JsonIgnore
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     @JsonIgnore
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     @JsonIgnore
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 
 }

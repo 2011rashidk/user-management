@@ -1,7 +1,7 @@
 package com.happiest.minds.usermanagement.service;
 
 import com.happiest.minds.usermanagement.entity.Organization;
-import com.happiest.minds.usermanagement.exception.ResourceNotFoundException;
+import com.happiest.minds.usermanagement.exception.NotFoundException;
 import com.happiest.minds.usermanagement.repository.OrganizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ public class OrganizationService {
 
     public Organization getOrganizationById(Integer orgId) {
         return organizationRepository.findById(orgId)
-                .orElseThrow(() -> new ResourceNotFoundException(NO_DATA_FOUND.getValue() + orgId));
+                .orElseThrow(() -> new NotFoundException(NO_DATA_FOUND.getValue() + orgId));
     }
 
     public List<Organization> getOrganizations() {

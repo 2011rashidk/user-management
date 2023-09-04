@@ -1,7 +1,7 @@
 package com.happiest.minds.usermanagement.controller;
 
-import com.happiest.minds.usermanagement.request.PermissionDTO;
 import com.happiest.minds.usermanagement.entity.Permission;
+import com.happiest.minds.usermanagement.request.PermissionDTO;
 import com.happiest.minds.usermanagement.service.PermissionService;
 import jakarta.validation.Valid;
 import lombok.NonNull;

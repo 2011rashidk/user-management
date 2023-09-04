@@ -2,6 +2,7 @@ package com.happiest.minds.usermanagement.exception;
 
 import com.happiest.minds.usermanagement.response.Response;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,8 +42,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Response> resourceNotFoundException(ResourceNotFoundException ex) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<Response> resourceNotFoundException(NotFoundException ex) {
+        log.error(ex.getMessage());
+        Response response = new Response(HttpStatus.NOT_FOUND, ex.getMessage(), null);
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<Response> signatureException(SignatureException ex) {
         log.error(ex.getMessage());
         Response response = new Response(HttpStatus.BAD_REQUEST, ex.getMessage(), null);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);

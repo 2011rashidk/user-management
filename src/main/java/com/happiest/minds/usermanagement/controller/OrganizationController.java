@@ -1,7 +1,7 @@
 package com.happiest.minds.usermanagement.controller;
 
-import com.happiest.minds.usermanagement.request.OrganizationDTO;
 import com.happiest.minds.usermanagement.entity.Organization;
+import com.happiest.minds.usermanagement.request.OrganizationDTO;
 import com.happiest.minds.usermanagement.service.OrganizationService;
 import jakarta.validation.Valid;
 import lombok.NonNull;

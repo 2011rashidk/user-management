@@ -1,7 +1,7 @@
 package com.happiest.minds.usermanagement.service;
 
 import com.happiest.minds.usermanagement.entity.Role;
-import com.happiest.minds.usermanagement.exception.ResourceNotFoundException;
+import com.happiest.minds.usermanagement.exception.NotFoundException;
 import com.happiest.minds.usermanagement.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ public class RoleService {
 
     public Role getRoleById(Integer roleId) {
         return roleRepository.findById(roleId)
-                .orElseThrow(() -> new ResourceNotFoundException(NO_DATA_FOUND.getValue() + roleId));
+                .orElseThrow(() -> new NotFoundException(NO_DATA_FOUND.getValue() + roleId));
     }
 
     public List<Role> getAllRoles() {

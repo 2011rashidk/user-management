@@ -1,7 +1,7 @@
 package com.happiest.minds.usermanagement.service;
 
 import com.happiest.minds.usermanagement.entity.Employee;
-import com.happiest.minds.usermanagement.exception.ResourceNotFoundException;
+import com.happiest.minds.usermanagement.exception.NotFoundException;
 import com.happiest.minds.usermanagement.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class EmployeeService {
 
     public Employee getEmployeeById(String id) {
         return employeeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(NO_DATA_FOUND.getValue() + id));
+                .orElseThrow(() -> new NotFoundException(NO_DATA_FOUND.getValue() + id));
     }
 
     public List<Employee> getEmployees() {

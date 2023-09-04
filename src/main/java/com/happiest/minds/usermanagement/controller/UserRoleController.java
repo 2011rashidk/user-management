@@ -1,7 +1,7 @@
 package com.happiest.minds.usermanagement.controller;
 
-import com.happiest.minds.usermanagement.request.UserRoleDTO;
 import com.happiest.minds.usermanagement.entity.UserRole;
+import com.happiest.minds.usermanagement.request.UserRoleDTO;
 import com.happiest.minds.usermanagement.service.UserRoleService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import static com.happiest.minds.usermanagement.enums.Constants.*;
 
 @RestController
-@RequestMapping("api/user/management/user/role")
+@RequestMapping("api/user/management/user-role")
 @Slf4j
 public class UserRoleController {
 

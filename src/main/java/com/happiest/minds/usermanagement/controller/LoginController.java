@@ -1,33 +1,37 @@
 package com.happiest.minds.usermanagement.controller;
 
+import com.happiest.minds.usermanagement.request.LoginDTO;
 import com.happiest.minds.usermanagement.response.LoginResponse;
-import com.happiest.minds.usermanagement.response.TokenRefreshResponse;
-import com.happiest.minds.usermanagement.request.UserLogin;
-import com.happiest.minds.usermanagement.service.JwtAuthenticationService;
+import com.happiest.minds.usermanagement.service.LoginService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("api/user/management/login")
+@Slf4j
+@RequiredArgsConstructor
 public class LoginController {
+    private LoginService service;
 
-    @Autowired
-    public JwtAuthenticationService jwtAuthenticationService;
 
     @PostMapping
-    public ResponseEntity<LoginResponse> userLogin(@Valid @RequestBody UserLogin userLogin) throws Exception {
-        LoginResponse response = jwtAuthenticationService.createAuthenticationToken(userLogin);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginDTO loginDTO) {
+        return new ResponseEntity<>(service.authenticate(loginDTO), HttpStatus.OK);
     }
 
-    @GetMapping("refresh/token")
-    public ResponseEntity<TokenRefreshResponse> refreshToken(HttpServletRequest request) throws Exception {
-        String token = jwtAuthenticationService.refreshToken(request);
-        return new ResponseEntity<>(new TokenRefreshResponse(token), HttpStatus.OK);
+    @PostMapping("refresh-token")
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        service.refreshToken(request, response);
     }
 
 }
