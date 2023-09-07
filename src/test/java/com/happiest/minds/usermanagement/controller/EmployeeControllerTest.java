@@ -101,20 +101,6 @@ public class EmployeeControllerTest {
         assertEquals(employees, response.getBody());
     }
 
-//    @Test
-//    void testUpdateEmployeeByIdPositive() {
-//        String employeeId = "123";
-//        EmployeeDTO employeeDTO = new EmployeeDTO();
-//
-//        when(employeeService.getEmployeeById(employeeId)).thenReturn(null);
-//
-//        ResponseEntity<Employee> response = employeeController.updateEmployeeById(employeeDTO);
-//
-//        verify(employeeService).getEmployeeById(employeeId);
-//        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-//        assertNull(response.getBody());
-//    }
-
     @Test
     void testDeleteEmployeeByIdPositive() {
         String employeeId = "123";

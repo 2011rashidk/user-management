@@ -23,17 +23,17 @@ public class RolePermissionController {
 
     @PostMapping
     public ResponseEntity<RolePermission> addPermissionToRole(@Valid @RequestBody RolePermissionDTO rolePermissionDTO) {
-        log.info("rolePermissionDTO: {}", rolePermissionDTO);
+        log.info(ROLE_PERMISSION_DTO.getValue(), rolePermissionDTO);
         RolePermission rolePermission = new RolePermission();
         BeanUtils.copyProperties(rolePermissionDTO, rolePermission);
         rolePermission = rolePermissionService.addPermissionToRole(rolePermission);
-        log.info("rolePermission: {}", rolePermission);
+        log.info(ROLE_PERMISSION.getValue(), rolePermission);
         return new ResponseEntity<>(rolePermission, HttpStatus.OK);
     }
 
     @DeleteMapping
     public ResponseEntity<HttpStatus> deletePermissionOfRole(@Valid @RequestBody RolePermissionDTO rolePermissionDTO) {
-        log.info("rolePermissionDTO: {}", rolePermissionDTO);
+        log.info(ROLE_PERMISSION_DTO.getValue(), rolePermissionDTO);
         RolePermission rolePermission = new RolePermission();
         BeanUtils.copyProperties(rolePermissionDTO, rolePermission);
         if (rolePermissionService.getByRoleIdAndPermissionId(rolePermission) != null) {

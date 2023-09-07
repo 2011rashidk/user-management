@@ -25,39 +25,40 @@ public class PermissionController {
 
     @PostMapping
     public ResponseEntity<Permission> createPermission(@Valid @RequestBody PermissionDTO permissionDTO) {
-        log.info("permissionDTO: {}", permissionDTO);
+        log.info(PERMISSION_DTO.getValue(), permissionDTO);
         Permission permission = new Permission();
         BeanUtils.copyProperties(permissionDTO, permission);
         permission = permissionService.createPermission(permission);
-        log.info("permission: {}", permission);
+        log.info(PERMISSION.getValue(), permission);
         return new ResponseEntity<>(permission, HttpStatus.CREATED);
     }
 
     @GetMapping("{permissionId}")
     public ResponseEntity<Permission> getPermissionById(@Valid @NonNull @PathVariable Integer permissionId) {
-        log.info("permissionId: {}", permissionId);
+        log.info(ID.getValue(), permissionId);
         Permission permission = permissionService.getPermissionById(permissionId);
-        log.info("permission: {}", permission);
+        log.info(PERMISSION.getValue(), permission);
         return new ResponseEntity<>(permission, HttpStatus.OK);
     }
 
     @GetMapping
     public ResponseEntity<List<Permission>> getAllPermissions() {
         List<Permission> permissions = permissionService.getAllPermissions();
-        log.info("permissions: {}", permissions);
+        log.info(PERMISSION.getValue(), permissions);
         return new ResponseEntity<>(permissions, HttpStatus.OK);
     }
 
     @PutMapping("{permissionId}")
     public ResponseEntity<Permission> updatePermissionById(@Valid @NonNull @PathVariable Integer permissionId,
                                                            @Valid @RequestBody PermissionDTO permissionDTO) {
-        log.info("permissionId: {}, permissionDTO: {}", permissionId, permissionDTO);
+        log.info(ID.getValue(), permissionId);
+        log.info(PERMISSION_DTO.getValue(), permissionDTO);
         if (permissionService.getPermissionById(permissionId) != null) {
             Permission permission = new Permission();
             BeanUtils.copyProperties(permissionDTO, permission);
             permission.setPermissionId(permissionId);
             permission = permissionService.createPermission(permission);
-            log.info("permission: {}", permission);
+            log.info(PERMISSION.getValue(), permission);
             return new ResponseEntity<>(permission, HttpStatus.OK);
         }
         log.error(NO_DATA_FOUND.getValue().concat(permissionId.toString()));
@@ -66,7 +67,7 @@ public class PermissionController {
 
     @DeleteMapping("{permissionId}")
     public ResponseEntity<HttpStatus> deletePermission(@Valid @NonNull @PathVariable Integer permissionId) {
-        log.info("permissionId: {}", permissionId);
+        log.info(ID.getValue(), permissionId);
         if (permissionService.getPermissionById(permissionId) != null) {
             permissionService.deletePermission(permissionId);
             log.info(RECORD_DELETED_FOR_ID.getValue().concat(permissionId.toString()));

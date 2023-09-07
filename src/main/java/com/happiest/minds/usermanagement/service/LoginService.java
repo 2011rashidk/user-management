@@ -1,7 +1,12 @@
 package com.happiest.minds.usermanagement.service;
 
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.happiest.minds.usermanagement.entity.Role;
 import com.happiest.minds.usermanagement.entity.Token;
 import com.happiest.minds.usermanagement.entity.User;
+import com.happiest.minds.usermanagement.exception.NotFoundException;
+import com.happiest.minds.usermanagement.repository.RoleRepository;
 import com.happiest.minds.usermanagement.repository.TokenRepository;
 import com.happiest.minds.usermanagement.repository.UserRepository;
 import com.happiest.minds.usermanagement.request.LoginDTO;
@@ -13,68 +18,76 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
+import java.util.Collections;
+import java.util.List;
+
+import static com.happiest.minds.usermanagement.enums.Constants.*;
 
 @Service
 @RequiredArgsConstructor
 public class LoginService {
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final TokenRepository tokenRepository;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    public BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    private final RoleRepository roleRepository;
 
     public LoginResponse register(UserDTO userDTO) {
-
         User user = new User();
         BeanUtils.copyProperties(userDTO, user);
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        user = userRepository.save(user);
-        String jwtToken = jwtService.generateToken(user);
+        Role role = roleRepository.getRoleByRoleName("USER");
+        user.setRoles(Collections.singleton(role));
+        user = userService.createUser(user);
+        String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
-        LocalDateTime tokenExpiryTime = jwtService.extractExpiration(jwtToken).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        saveUserToken(user, jwtToken);
+        LocalDateTime accessTokenExpiryTime = jwtService.extractExpiration(accessToken).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime refreshTokenExpiry = jwtService.extractExpiration(refreshToken).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        saveUserToken(user, accessToken);
         return LoginResponse.builder()
-                .accessToken(jwtToken)
+                .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .tokenExpiry(tokenExpiryTime)
+                .accessTokenExpiry(accessTokenExpiryTime)
+                .refreshTokenExpiry(refreshTokenExpiry)
                 .build();
     }
 
     public LoginResponse authenticate(LoginDTO loginDTO) {
-        Authentication authenticate =
-                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword()));
-        User user = userRepository.findByUsername(loginDTO.getUsername());
-        String jwtToken = jwtService.generateToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
-        LocalDateTime tokenExpiryTime = jwtService.extractExpiration(jwtToken).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        revokeAllUserTokens(user);
-        saveUserToken(user, jwtToken);
-        return LoginResponse.builder()
-                .accessToken(jwtToken)
-                .refreshToken(refreshToken)
-                .tokenExpiry(tokenExpiryTime)
-                .build();
+        User user = userService.findByUsername(loginDTO.getUsername());
+        if (user != null) {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword()));
+            String accessToken = jwtService.generateToken(user);
+            String refreshToken = jwtService.generateRefreshToken(user);
+            LocalDateTime accessTokenExpiry = jwtService.extractExpiration(accessToken).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            LocalDateTime refreshTokenExpiry = jwtService.extractExpiration(refreshToken).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            revokeAllUserTokens(user);
+            saveUserToken(user, accessToken);
+            return LoginResponse.builder()
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .accessTokenExpiry(accessTokenExpiry)
+                    .refreshTokenExpiry(refreshTokenExpiry)
+                    .build();
+        }
+        throw new NotFoundException(USERNAME_NOT_FOUND.getValue());
     }
 
     private void saveUserToken(User user, String jwtToken) {
         Token token = Token.builder()
                 .user(user)
-                .token(jwtToken)
+                .jwtToken(jwtToken)
                 .expired(false)
                 .revoked(false)
                 .build();
@@ -82,7 +95,7 @@ public class LoginService {
     }
 
     private void revokeAllUserTokens(User user) {
-        var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getUserId());
+        List<Token> validUserTokens = tokenRepository.findAllValidTokenByUser(user.getUserId());
         if (validUserTokens.isEmpty())
             return;
         validUserTokens.forEach(token -> {
@@ -102,16 +115,23 @@ public class LoginService {
         refreshToken = authHeader.substring(7);
         userEmail = jwtService.extractUsername(refreshToken);
         if (userEmail != null) {
-            User user = userRepository.findByUsername(userEmail);
+            User user = userService.findByUsername(userEmail);
             if (jwtService.isTokenValid(refreshToken, user)) {
                 String accessToken = jwtService.generateToken(user);
+                LocalDateTime accessTokenExpiry = jwtService.extractExpiration(accessToken).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                LocalDateTime refreshTokenExpiry = jwtService.extractExpiration(refreshToken).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);
                 LoginResponse loginResponse = LoginResponse.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
+                        .accessTokenExpiry(accessTokenExpiry)
+                        .refreshTokenExpiry(refreshTokenExpiry)
                         .build();
-                new ObjectMapper().writeValue(response.getOutputStream(), loginResponse);
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.registerModule(new JavaTimeModule());
+                mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+                mapper.writeValue(response.getOutputStream(), loginResponse);
             }
         }
     }

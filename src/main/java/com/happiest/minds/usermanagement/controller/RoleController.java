@@ -23,24 +23,24 @@ public class RoleController {
 
     @PostMapping
     public ResponseEntity<Role> createRole(@RequestBody Role role) {
-        log.info("Input request:: role: {}", role);
+        log.info(ROLE_INPUT.getValue(), role);
         role = roleService.createRole(role);
-        log.info("role: {}", role);
+        log.info(ROLE.getValue(), role);
         return new ResponseEntity<>(role, HttpStatus.CREATED);
     }
 
     @GetMapping("{roleId}")
     public ResponseEntity<Role> getRoleById(@Valid @NonNull @PathVariable Integer roleId) {
-        log.info("roleId: {}", roleId);
+        log.info(ID.getValue(), roleId);
         Role role = roleService.getRoleById(roleId);
-        log.info("role: {}", role);
+        log.info(ROLE.getValue(), role);
         return new ResponseEntity<>(role, HttpStatus.OK);
     }
 
     @GetMapping
     public ResponseEntity<List<Role>> getAllRoles() {
         List<Role> roles = roleService.getAllRoles();
-        log.info("roles: {}", roles);
+        log.info(ROLE.getValue(), roles);
         return new ResponseEntity<>(roles, HttpStatus.OK);
 
     }
@@ -48,11 +48,12 @@ public class RoleController {
     @PutMapping("{roleId}")
     public ResponseEntity<Role> updateRoleById(@Valid @NonNull @PathVariable Integer roleId,
                                                @Valid @RequestBody Role role) {
-        log.info("Input request:: roleId: {}, role: {}", roleId, role);
+        log.info(ID.getValue(), roleId);
+        log.info(ROLE_INPUT.getValue(), role);
         if (roleService.getRoleById(roleId) != null) {
             role.setRoleId(roleId);
             role = roleService.createRole(role);
-            log.info("role: {}", role);
+            log.info(ROLE.getValue(), role);
             return new ResponseEntity<>(role, HttpStatus.OK);
         }
         log.error(NO_DATA_FOUND.getValue().concat(roleId.toString()));
@@ -61,7 +62,7 @@ public class RoleController {
 
     @DeleteMapping("{roleId}")
     public ResponseEntity<HttpStatus> deleteRole(@Valid @NonNull @PathVariable Integer roleId) {
-        log.info("roleId: {}", roleId);
+        log.info(ID.getValue(), roleId);
         if (roleService.getRoleById(roleId) != null) {
             roleService.deleteRole(roleId);
             log.info(RECORD_DELETED_FOR_ID.getValue().concat(roleId.toString()));

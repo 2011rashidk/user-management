@@ -15,6 +15,7 @@ public class LoginResponse {
 
   private String accessToken;
   private String refreshToken;
-  LocalDateTime tokenExpiry;
+  private LocalDateTime accessTokenExpiry;
+  private LocalDateTime refreshTokenExpiry;
 
 }

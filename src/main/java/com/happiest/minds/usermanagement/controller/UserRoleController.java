@@ -23,17 +23,17 @@ public class UserRoleController {
 
     @PostMapping
     public ResponseEntity<UserRole> addRoleToUser(@Valid @RequestBody UserRoleDTO userRoleDTO) {
-        log.info("userRoleDTO: {}", userRoleDTO);
+        log.info(USER_ROLE_DTO.getValue(), userRoleDTO);
         UserRole userRole = new UserRole();
         BeanUtils.copyProperties(userRoleDTO, userRole);
         userRole = userRoleService.addRoleToUser(userRole);
-        log.info("userRole: {}", userRole);
+        log.info(USER_ROLE.getValue(), userRole);
         return new ResponseEntity<>(userRole, HttpStatus.CREATED);
     }
 
     @DeleteMapping
     public ResponseEntity<HttpStatus> deleteRoleOfUser(@Valid @RequestBody UserRoleDTO userRoleDTO) {
-        log.info("userRoleDTO: {}", userRoleDTO);
+        log.info(USER_ROLE_DTO.getValue(), userRoleDTO);
         UserRole userRole = new UserRole();
         BeanUtils.copyProperties(userRoleDTO, userRole);
         if (userRoleService.getByUserIdAndRoleId(userRole) != null) {

@@ -14,27 +14,31 @@ import static com.happiest.minds.usermanagement.enums.Constants.*;
 @Service
 public class UserService {
     @Autowired
-    public UserRepository userRepo;
+    public UserRepository userRepository;
 
     @Autowired
     public BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public User createUser(User user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        return userRepo.save(user);
+        return userRepository.save(user);
     }
 
     public User getUserById(Integer userId) {
-        return userRepo.findById(userId)
+        return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(NO_DATA_FOUND.getValue() + userId));
     }
 
     public List<User> getAllUsers() {
-        return userRepo.findAll();
+        return userRepository.findAll();
     }
 
     public void deleteUserById(Integer userId) {
-        userRepo.deleteById(userId);
+        userRepository.deleteById(userId);
+    }
+
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 
 }

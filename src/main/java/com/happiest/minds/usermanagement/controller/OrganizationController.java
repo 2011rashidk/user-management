@@ -26,39 +26,40 @@ public class OrganizationController {
 
     @PostMapping
     public ResponseEntity<Organization> createOrganization(@Valid @RequestBody OrganizationDTO organizationDTO) {
-        log.info("organizationDTO: {}", organizationDTO);
+        log.info(ORGANIZATION_DTO.getValue(), organizationDTO);
         Organization organization = new Organization();
         BeanUtils.copyProperties(organizationDTO, organization);
         organization = organizationService.createOrganization(organization);
-        log.info("organization: {}", organization);
+        log.info(ORGANIZATION.getValue(), organization);
         return new ResponseEntity<>(organization, HttpStatus.CREATED);
     }
 
     @GetMapping("{orgId}")
     public ResponseEntity<Organization> getOrganizationById(@Valid @NonNull @PathVariable Integer orgId) {
-        log.info("orgId: {}", orgId);
+        log.info(ID.getValue(), orgId);
         Organization organization = organizationService.getOrganizationById(orgId);
-        log.info("organization: {}", organization);
+        log.info(ORGANIZATION.getValue(), organization);
         return new ResponseEntity<>(organization, HttpStatus.OK);
     }
 
     @GetMapping
     public ResponseEntity<List<Organization>> getOrganizations() {
         List<Organization> organizations = organizationService.getOrganizations();
-        log.info("organizations: {}", organizations);
+        log.info(ORGANIZATION.getValue(), organizations);
         return new ResponseEntity<>(organizations, HttpStatus.OK);
     }
 
     @PutMapping("{orgId}")
     public ResponseEntity<Organization> updateOrganizationById(@Valid @NonNull @PathVariable Integer orgId,
                                                                @Valid @RequestBody OrganizationDTO organizationDTO) {
-        log.info("orgId: {}, organizationDTO: {}", orgId, organizationDTO);
+        log.info(ID.getValue(), orgId);
+        log.info(ORGANIZATION_DTO.getValue(), organizationDTO);
         if (organizationService.getOrganizationById(orgId) != null) {
             Organization organization = new Organization();
             BeanUtils.copyProperties(organizationDTO, organization);
             organization.setOrgId(orgId);
             organization = organizationService.createOrganization(organization);
-            log.info("organization: {}", organization);
+            log.info(ORGANIZATION.getValue(), organization);
             return new ResponseEntity<>(organization, HttpStatus.OK);
         }
         log.error(NO_DATA_FOUND.getValue().concat(orgId.toString()));
@@ -67,7 +68,7 @@ public class OrganizationController {
 
     @DeleteMapping("{orgId}")
     public ResponseEntity<HttpStatus> deleteOrganizationById(@Valid @NonNull @PathVariable Integer orgId) {
-        log.info("orgId: {}", orgId);
+        log.info(ID.getValue(), orgId);
         if (organizationService.getOrganizationById(orgId) != null) {
             organizationService.deleteOrganizationById(orgId);
             log.info(RECORD_DELETED_FOR_ID.getValue().concat(orgId.toString()));
