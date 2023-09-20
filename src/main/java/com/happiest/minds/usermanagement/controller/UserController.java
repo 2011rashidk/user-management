@@ -1,10 +1,12 @@
 package com.happiest.minds.usermanagement.controller;
 
 import com.happiest.minds.usermanagement.entity.User;
+import com.happiest.minds.usermanagement.request.UserDTO;
 import com.happiest.minds.usermanagement.service.UserService;
 import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +25,13 @@ public class UserController {
     public UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody User user) {
         log.info(USER_INPUT.getValue(), user);
         user = userService.createUser(user);
         log.info(USER.getValue(), user);
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+        UserDTO userDTO = new UserDTO();
+        BeanUtils.copyProperties(user, userDTO);
+        return new ResponseEntity<>(userDTO, HttpStatus.CREATED);
     }
 
     @GetMapping("{userId}")
@@ -46,7 +50,7 @@ public class UserController {
     }
 
     @PutMapping("{userId}")
-    public ResponseEntity<User> updateUserById(@Valid @NonNull @PathVariable Integer userId,
+    public ResponseEntity<UserDTO> updateUserById(@Valid @NonNull @PathVariable Integer userId,
                                                @Valid @RequestBody User user) {
         log.info(ID.getValue(), userId);
         log.info(USER_INPUT.getValue(), user);
@@ -54,7 +58,9 @@ public class UserController {
             user.setUserId(userId);
             user = userService.createUser(user);
             log.info(USER.getValue(), user);
-            return new ResponseEntity<>(user, HttpStatus.OK);
+            UserDTO userDTO = new UserDTO();
+            BeanUtils.copyProperties(user, userDTO);
+            return new ResponseEntity<>(userDTO, HttpStatus.OK);
         }
         log.error(NO_DATA_FOUND.getValue().concat(userId.toString()));
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);

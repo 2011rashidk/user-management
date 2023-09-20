@@ -8,7 +8,6 @@ import com.happiest.minds.usermanagement.entity.User;
 import com.happiest.minds.usermanagement.exception.NotFoundException;
 import com.happiest.minds.usermanagement.repository.RoleRepository;
 import com.happiest.minds.usermanagement.repository.TokenRepository;
-import com.happiest.minds.usermanagement.repository.UserRepository;
 import com.happiest.minds.usermanagement.request.LoginDTO;
 import com.happiest.minds.usermanagement.request.UserDTO;
 import com.happiest.minds.usermanagement.response.LoginResponse;
@@ -39,15 +38,11 @@ public class LoginService {
     private final TokenRepository tokenRepository;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
     private final RoleRepository roleRepository;
 
     public LoginResponse register(UserDTO userDTO) {
         User user = new User();
         BeanUtils.copyProperties(userDTO, user);
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         Role role = roleRepository.getRoleByRoleName("USER");
         user.setRoles(Collections.singleton(role));
         user = userService.createUser(user);

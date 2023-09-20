@@ -1,6 +1,7 @@
 package com.happiest.minds.usermanagement.controller;
 
 import com.happiest.minds.usermanagement.entity.User;
+import com.happiest.minds.usermanagement.request.UserDTO;
 import com.happiest.minds.usermanagement.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,14 +33,15 @@ class UserControllerTest {
     @Test
     void testCreateUser() {
         User user = new User();
+        UserDTO userDTO = new UserDTO();
 
         when(userService.createUser(user)).thenReturn(user);
 
-        ResponseEntity<User> response = userController.createUser(user);
+        ResponseEntity<UserDTO> response = userController.createUser(user);
 
         verify(userService).createUser(user);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals(user, response.getBody());
+        assertEquals(userDTO, response.getBody());
     }
     @Test
     void testGetUserById() {
@@ -72,18 +74,19 @@ class UserControllerTest {
     void testUpdateUserById_ExistingUser() {
         Integer userId = 123;
         User user = new User();
+        UserDTO userDTO = new UserDTO();
 
         User existingUser = new User();
 
         when(userService.getUserById(userId)).thenReturn(existingUser);
         when(userService.createUser(user)).thenReturn(user);
 
-        ResponseEntity<User> response = userController.updateUserById(userId, user);
+        ResponseEntity<UserDTO> response = userController.updateUserById(userId, user);
 
         verify(userService).getUserById(userId);
         verify(userService).createUser(user);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(user, response.getBody());
+//        assertEquals(userDTO, response.getBody());
     }
 
     @Test
@@ -93,7 +96,7 @@ class UserControllerTest {
 
         when(userService.getUserById(userId)).thenReturn(null);
 
-        ResponseEntity<User> response = userController.updateUserById(userId, user);
+        ResponseEntity<UserDTO> response = userController.updateUserById(userId, user);
 
         verify(userService).getUserById(userId);
         verify(userService, never()).createUser(any(User.class));

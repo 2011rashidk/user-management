@@ -42,7 +42,7 @@ public class EmployeeControllerTest {
 
         ResponseEntity<Employee> response = employeeController.createEmployee(employeeDTO);
 
-        verify(employeeService).createEmployee(any(Employee.class)); // Verify service method was called
+        verify(employeeService).createEmployee(any(Employee.class));
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(employee, response.getBody());
     }
@@ -61,7 +61,7 @@ public class EmployeeControllerTest {
 
         ResponseEntity<List<Employee>> response = employeeController.createEmployees(employeeDTOList);
 
-        verify(employeeService, times(employeeDTOList.size())).createEmployee(any(Employee.class)); // Verify service method was called for each employeeDTO
+        verify(employeeService, times(employeeDTOList.size())).createEmployee(any(Employee.class));
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(employees, response.getBody());
 
@@ -83,7 +83,7 @@ public class EmployeeControllerTest {
 
         ResponseEntity<Employee> response = employeeController.getEmployeeById(employeeId);
 
-        verify(employeeService).getEmployeeById(employeeId); // Verify service method was called with correct parameter
+        verify(employeeService).getEmployeeById(employeeId);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(employee, response.getBody());
     }
